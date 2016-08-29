@@ -1,0 +1,59 @@
+{
+  "name": "bookshelf-model-relations",
+  "description": "Provides a way to see what relations/associations a bookshelf model has",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitalsadhu/bookshelf-model-relations.git"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalsadhu/bookshelf-model-relations/issues"
+  },
+  "homepage": "https://github.com/digitalsadhu/bookshelf-model-relations",
+  "author": {
+    "name": "Richard Walker",
+    "email": "digitalsadhu@gmail.com",
+    "url": "https://mediasuite.co.nz"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "lint": "standard --verbose | snazzy",
+    "pretest": "npm run lint",
+    "test:ci": "mocha -R spec test",
+    "test:dev": "testem .",
+    "test": "npm run test:ci",
+    "prepublish": "npm test && npm prune",
+    "preversion:patch": "npm run test",
+    "version:patch": "xyz -i patch",
+    "preversion:minor": "npm run test",
+    "version:minor": "xyz -i minor",
+    "preversion:major": "npm run test",
+    "version:major": "xyz -i major"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org"
+  },
+  "keywords": [
+    "bookshelf",
+    "model",
+    "models",
+    "orm",
+    "relations",
+    "relationships",
+    "associations"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2",
+    "snazzy": "^4.0.1",
+    "standard": "^8.0.0",
+    "testem": "^1.10.4",
+    "xyz": "^1.0.0"
+  },
+  "peerDependencies": {}
+}
