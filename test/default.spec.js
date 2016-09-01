@@ -77,7 +77,7 @@ describe('bookshelf-model-relations', () => {
       user: {
         name: 'user',
         type: 'belongsTo',
-        keyFrom: 'user_id',
+        keyFrom: 'userid',
         modelFromName: 'Post',
         keyTo: null,
         modelToName: 'User',

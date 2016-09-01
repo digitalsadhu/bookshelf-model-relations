@@ -20,7 +20,8 @@ const MATCHERS = Object.freeze({
   RELATIONSHIP_TYPE: /return\s*this\s*\.\s*([^\(]*)\s*\(/,
   THROUGH: /\.*through\s*\(/,
   MODEL_TO_NAME: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(([^,\\)]*)`),
-  THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(([^,\\)]*)`)
+  THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(([^,\\)]*)`),
+  RELATION_FUNCTION_PARAMS: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(.*,*\\s*\\[['"]([^\\'"]*)`)
 })
 
 const capture = (str, matcher) => matcher.test(str) ? str.match(matcher)[1] : null
@@ -53,10 +54,12 @@ module.exports = (Model, options) => {
       throughModelName: capture(functionString, MATCHERS.THROUGH_MODEL_NAME)
     }
 
+    const fk = capture(functionString, MATCHERS.RELATION_FUNCTION_PARAMS)
+
     if (RELATIONSHIP_TYPES.BELONGS_TO === relationships[prop].type) {
-      relationships[prop].keyFrom = _.snakeCase(`${relationships[prop].modelToName}_id`)
+      relationships[prop].keyFrom = fk || _.snakeCase(`${relationships[prop].modelToName}_id`)
     } else {
-      relationships[prop].keyTo = _.snakeCase(`${relationships[prop].modelFromName}_id`)
+      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFromName}_id`)
     }
   }
   return relationships
