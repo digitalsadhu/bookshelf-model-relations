@@ -23,6 +23,8 @@ const MATCHERS = Object.freeze({
   THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(([^,\\)]*)`)
 })
 
+const capture = (str, matcher) => matcher.test(str) ? str.match(matcher)[1] : null
+
 module.exports = (Model, options) => {
   const instance = new Model()
   const proto = Reflect.getPrototypeOf(instance)
@@ -40,8 +42,6 @@ module.exports = (Model, options) => {
     const innerBlock = functionString.match(MATCHERS.INNER_FUNCTION_BLOCK)
 
     if (!innerBlock) return
-
-    const capture = (str, matcher) => matcher.test(str) ? str.match(matcher)[1] : null
 
     relationships[prop] = {
       name: prop,
