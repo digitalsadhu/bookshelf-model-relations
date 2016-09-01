@@ -4,6 +4,10 @@ const _ = require('lodash')
 const inflection = require('inflection')
 
 // TODO: allow comment syntax to allow the user to override the relationship definition for a model
+// TODO: handle polymorphic
+// TODO: check belongstoMany is correct (matches loopbacks approach)
+// TODO: handle passed in table names in relationship defns. eg. this.belongsTo(Comment, ['commentid'])
+// also this.belongsToMany(Post, ['comment_posts'], ['comment_id'], ['post_id']
 
 const RELATIONSHIP_TYPES = Object.freeze({
   BELONGS_TO: 'belongsTo',
