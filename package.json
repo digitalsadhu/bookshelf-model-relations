@@ -47,6 +47,7 @@
     "associations"
   ],
   "dependencies": {
+    "inflection": "^1.10.0",
     "lodash": "^4.15.0"
   },
   "devDependencies": {

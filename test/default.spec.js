@@ -68,7 +68,7 @@ let Paragraph = bookshelf.Model.extend({
 
 describe('bookshelf-model-relations', () => {
   it('relation defn for Post model', () => {
-    const relationDefn = relations('Post', Post)
+    const relationDefn = relations(Post)
     assert.deepEqual(relationDefn, {
       user: {
         name: 'user',
@@ -94,7 +94,7 @@ describe('bookshelf-model-relations', () => {
   })
 
   it('through', () => {
-    const relationDefn = relations('Paragraph', Paragraph)
+    const relationDefn = relations(Paragraph)
     assert.deepEqual(relationDefn, {
       book: {
         name: 'book',
@@ -107,5 +107,10 @@ describe('bookshelf-model-relations', () => {
         throughModelName: 'Chapter'
       }
     })
+  })
+
+  it('modelName option', () => {
+    const relationDefn = relations(Paragraph, {modelName: 'other'})
+    assert.deepEqual(relationDefn.book.modelFromName, 'other')
   })
 })

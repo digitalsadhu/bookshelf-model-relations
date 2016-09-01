@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const inflection = require('inflection')
 
 // TODO: allow comment syntax to allow the user to override the relationship definition for a model
 
@@ -22,9 +23,14 @@ const MATCHERS = Object.freeze({
   THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(([^,\\)]*)`)
 })
 
-module.exports = (modelName, Model) => {
+module.exports = (Model, options) => {
   const instance = new Model()
   const proto = Reflect.getPrototypeOf(instance)
+
+  options = _.defaults(options, {
+    modelName: _.upperFirst(inflection.singularize(_.toLower(instance.tableName)))
+  })
+
   const relationships = {}
   Reflect.ownKeys(proto).forEach(prop => {
     if (['constructor', 'tableName', 'idAttribute'].indexOf(prop) !== -1) return
@@ -43,7 +49,7 @@ module.exports = (modelName, Model) => {
       through: MATCHERS.THROUGH.test(functionString),
       keyFrom: null,
       keyTo: null,
-      modelFromName: modelName,
+      modelFromName: options.modelName,
       modelToName: capture(functionString, MATCHERS.MODEL_TO_NAME),
       throughModelName: capture(functionString, MATCHERS.THROUGH_MODEL_NAME)
     }
