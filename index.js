@@ -40,7 +40,7 @@ module.exports = (Model, options) => {
     const functionString = proto[prop].toString()
     const innerBlock = functionString.match(MATCHERS.INNER_FUNCTION_BLOCK)
 
-    if (!innerBlock) return
+    if (!innerBlock || !MATCHERS.RELATIONSHIP_TYPE.test(innerBlock)) continue
 
     relationships[prop] = {
       name: prop,

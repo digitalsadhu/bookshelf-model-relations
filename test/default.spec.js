@@ -15,6 +15,10 @@ const Post = bookshelf.Model.extend({
 
   comments () {
     return this.hasMany(Comment)
+  },
+
+  other () {
+    console.log('is not a relationship function')
   }
 })
 
