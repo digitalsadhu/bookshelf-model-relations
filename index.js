@@ -37,8 +37,7 @@ module.exports = (Model, options) => {
   Reflect.ownKeys(proto).forEach(prop => {
     if (_.includes(['constructor', 'tableName', 'idAttribute'], prop)) return
 
-    const relationName = prop
-    const functionString = proto[relationName].toString()
+    const functionString = proto[prop].toString()
     const innerBlock = functionString.match(MATCHERS.INNER_FUNCTION_BLOCK)
 
     if (!innerBlock) return
