@@ -33,7 +33,7 @@ module.exports = (Model, options) => {
 
   const relationships = {}
   Reflect.ownKeys(proto).forEach(prop => {
-    if (['constructor', 'tableName', 'idAttribute'].indexOf(prop) !== -1) return
+    if (_.includes(['constructor', 'tableName', 'idAttribute'], prop)) return
 
     const relationName = prop
     const functionString = proto[relationName].toString()
