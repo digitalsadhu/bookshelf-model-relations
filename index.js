@@ -34,8 +34,8 @@ module.exports = (Model, options) => {
   })
 
   const relationships = {}
-  Reflect.ownKeys(proto).forEach(prop => {
-    if (_.includes(['constructor', 'tableName', 'idAttribute'], prop)) return
+  for (let prop of Reflect.ownKeys(proto)) {
+    if (_.includes(['constructor', 'tableName', 'idAttribute'], prop)) continue
 
     const functionString = proto[prop].toString()
     const innerBlock = functionString.match(MATCHERS.INNER_FUNCTION_BLOCK)
@@ -58,6 +58,6 @@ module.exports = (Model, options) => {
     } else {
       relationships[prop].keyTo = _.snakeCase(`${relationships[prop].modelFromName}_id`)
     }
-  })
+  }
   return relationships
 }
