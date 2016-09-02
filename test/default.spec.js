@@ -153,4 +153,37 @@ describe('bookshelf-model-relations', () => {
       }
     })
   })
+
+  it('support override of relationship defn via relationships object on model', () => {
+    const Model = bookshelf.Model.extend({
+      relations: {
+        silly: {
+          type: 'belongsTo',
+          keyFrom: 'bookid',
+          modelFromName: 'Model',
+          keyTo: 'nothing',
+          modelToName: 'BookModel',
+          through: true,
+          throughModelName: 'Wuther'
+        }
+      },
+
+      silly: function () {
+        return this.hasMany('Comment')
+      }
+    })
+    const relationDefn = relations(Model)
+    assert.deepEqual(relationDefn, {
+      silly: {
+        name: 'silly',
+        type: 'belongsTo',
+        keyFrom: 'bookid',
+        modelFromName: 'Model',
+        keyTo: 'nothing',
+        modelToName: 'BookModel',
+        through: true,
+        throughModelName: 'Wuther'
+      }
+    })
+  })
 })

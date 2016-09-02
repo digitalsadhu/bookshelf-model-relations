@@ -1,13 +1,12 @@
 'use strict'
 
-const _ = require('lodash')
-const inflection = require('inflection')
-
-// TODO: allow comment syntax to allow the user to override the relationship definition for a model
 // TODO: handle polymorphic
 // TODO: check belongstoMany is correct (matches loopbacks approach)
-// TODO: handle passed in table names in relationship defns. eg. this.belongsTo(Comment, ['commentid'])
-// also this.belongsToMany(Post, ['comment_posts'], ['comment_id'], ['post_id']
+// TODO: handle this.belongsToMany(Post, ['comment_posts'], ['comment_id'], ['post_id']
+// TODO: add documentation
+
+const _ = require('lodash')
+const inflection = require('inflection')
 
 const RELATIONSHIP_TYPES = Object.freeze({
   BELONGS_TO: 'belongsTo',
@@ -64,6 +63,20 @@ module.exports = (Model, options) => {
         modelFromName: capture(relationComment, /modelFromName:([^\s]*)/) || options.modelName,
         modelToName: capture(relationComment, /modelToName:([^\s]*)/),
         throughModelName: capture(relationComment, /throughModelName:([^\s]*)/)
+      }
+      continue
+    }
+
+    if (proto.relations && proto.relations[prop]) {
+      relationships[prop] = {
+        name: prop,
+        type: proto.relations[prop].type || null,
+        through: proto.relations[prop].through || null,
+        keyFrom: proto.relations[prop].keyFrom || null,
+        keyTo: proto.relations[prop].keyTo || null,
+        modelFromName: proto.relations[prop].modelFromName || null,
+        modelToName: proto.relations[prop].modelToName || null,
+        throughModelName: proto.relations[prop].throughModelName || null
       }
       continue
     }
