@@ -8,6 +8,7 @@ const relations = require('..')
 
 const Post = bookshelf.Model.extend({
   tableName: 'posts',
+  idAttribute: '_id',
 
   user () {
     return this
@@ -82,7 +83,7 @@ describe('bookshelf-model-relations', () => {
         type: 'belongsTo',
         keyFrom: 'userid',
         modelFromName: 'Post',
-        keyTo: null,
+        keyTo: '_id',
         modelToName: 'User',
         through: false,
         throughModelName: null
@@ -90,7 +91,7 @@ describe('bookshelf-model-relations', () => {
       comments: {
         name: 'comments',
         type: 'hasMany',
-        keyFrom: null,
+        keyFrom: '_id',
         modelFromName: 'Post',
         keyTo: 'post_id',
         modelToName: 'Comment',
@@ -108,7 +109,7 @@ describe('bookshelf-model-relations', () => {
         type: 'belongsTo',
         keyFrom: 'book_id',
         modelFromName: 'Paragraph',
-        keyTo: null,
+        keyTo: 'id',
         modelToName: 'Book',
         through: true,
         throughModelName: 'Chapter'

@@ -98,8 +98,10 @@ module.exports = (Model, options) => {
 
     if (RELATIONSHIP_TYPES.BELONGS_TO === relationships[prop].type) {
       relationships[prop].keyFrom = fk || _.snakeCase(`${relationships[prop].modelToName}_id`)
+      relationships[prop].keyTo = proto.idAttribute || 'id'
     } else {
       relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFromName}_id`)
+      relationships[prop].keyFrom = proto.idAttribute || 'id'
     }
   }
   return relationships
