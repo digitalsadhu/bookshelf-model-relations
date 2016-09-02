@@ -10,7 +10,8 @@ const Post = bookshelf.Model.extend({
   tableName: 'posts',
 
   user () {
-    return this.belongsTo(User, ['userid'])
+    return this
+      .belongsTo(User, ['userid'])
   },
 
   comments () {
@@ -38,7 +39,7 @@ const User = bookshelf.Model.extend({
   },
 
   comments () {
-    return this.hasMany(Comment)
+    return this.hasMany('Comment')
   }
 })
 
@@ -66,7 +67,9 @@ let Paragraph = bookshelf.Model.extend({
   tableName: 'paragraphs',
 
   book: function () {
-    return this.belongsTo(Book).through(Chapter)
+    return this
+      .belongsTo(Book)
+      .through('Chapter')
   }
 })
 
@@ -116,5 +119,10 @@ describe('bookshelf-model-relations', () => {
   it('modelName option', () => {
     const relationDefn = relations(Paragraph, {modelName: 'other'})
     assert.deepEqual(relationDefn.book.modelFromName, 'other')
+  })
+
+  it('support registry syntax', () => {
+    const relationDefn = relations(User)
+    assert.equal(relationDefn.comments.modelToName, 'Comment')
   })
 })
