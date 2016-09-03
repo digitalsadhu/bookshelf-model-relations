@@ -6,7 +6,7 @@ Provides a way to see what relations/associations a bookshelf model has
 
 [![Media Suite](http://mediasuite.co.nz/ms-badge.png)](http://mediasuite.co.nz)
 
-[![Build Status](https://travis-ci.org/mediasuitenz/bookshelf-model-relations.svg)](https://travis-ci.org/digitalsadhu/bookshelf-model-relations)
+[![Build Status](https://travis-ci.org/digitalsadhu/bookshelf-model-relations.svg?branch=master)](https://travis-ci.org/digitalsadhu/bookshelf-model-relations)
 
 ## Installation
 
