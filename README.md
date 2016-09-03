@@ -18,7 +18,7 @@ npm install bookshelf-model-relations --save
 
 Require the module
 ```js
-const relations = require('bookshelf-model-relations)
+const relations = require('bookshelf-model-relations')
 ```
 
 Pass it a bookshelf model
