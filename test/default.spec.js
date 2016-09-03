@@ -82,49 +82,114 @@ describe('bookshelf-model-relations', () => {
         name: 'user',
         type: 'belongsTo',
         keyFrom: 'userid',
-        modelFromName: 'Post',
+        modelFrom: 'Post',
         keyTo: '_id',
-        modelToName: 'User',
-        through: false,
-        throughModelName: null
+        modelTo: 'User',
+        keyThrough: null,
+        modelThrough: null,
+        multiple: false
       },
       comments: {
         name: 'comments',
         type: 'hasMany',
         keyFrom: '_id',
-        modelFromName: 'Post',
+        modelFrom: 'Post',
         keyTo: 'post_id',
-        modelToName: 'Comment',
-        through: false,
-        throughModelName: null
+        modelTo: 'Comment',
+        keyThrough: null,
+        modelThrough: null,
+        multiple: true
       }
     })
   })
 
   it('through', () => {
-    const relationDefn = relations(Paragraph)
-    assert.deepEqual(relationDefn, {
-      book: {
-        name: 'book',
-        type: 'belongsTo',
-        keyFrom: 'book_id',
-        modelFromName: 'Paragraph',
-        keyTo: 'id',
-        modelToName: 'Book',
-        through: true,
-        throughModelName: 'Chapter'
+    const Appointment = bookshelf.Model.extend({
+      tableName: 'appointment',
+
+      patient: function () {
+        return this.belongsTo(Patient)
+      },
+
+      physician: function () {
+        return this.belongsTo(Physician)
       }
+    })
+
+    const Physician = bookshelf.Model.extend({
+      tableName: 'physician',
+
+      patients: function () {
+        return this.hasMany(Patient).through(Appointment)
+      }
+    })
+
+    const Patient = bookshelf.Model.extend({
+      tableName: 'patient',
+
+      physicians: function () {
+        return this.hasMany(Physician).through(Appointment)
+      }
+    })
+
+    assert.deepEqual(relations(Appointment), {
+      patient:
+        { name: 'patient',
+          type: 'belongsTo',
+          modelFrom: 'Appointment',
+          keyFrom: 'patient_id',
+          modelTo: 'Patient',
+          keyTo: 'id',
+          multiple: false,
+          keyThrough: null,
+          modelThrough: null },
+      physician:
+        { name: 'physician',
+          type: 'belongsTo',
+          modelFrom: 'Appointment',
+          keyFrom: 'physician_id',
+          modelTo: 'Physician',
+          keyTo: 'id',
+          multiple: false,
+          keyThrough: null,
+          modelThrough: null }
+    })
+
+    assert.deepEqual(relations(Physician), {
+      patients:
+        { name: 'patients',
+          type: 'hasMany',
+          modelFrom: 'Physician',
+          keyFrom: 'id',
+          modelTo: 'Patient',
+          keyTo: 'physician_id',
+          multiple: true,
+          modelThrough: 'Appointment',
+          keyThrough: 'patient_id' }
+    })
+
+    assert.deepEqual(relations(Patient), {
+      physicians:
+        { name: 'physicians',
+          type: 'hasMany',
+          modelFrom: 'Patient',
+          keyFrom: 'id',
+          modelTo: 'Physician',
+          keyTo: 'patient_id',
+          multiple: true,
+          modelThrough: 'Appointment',
+          keyThrough: 'physician_id' }
     })
   })
 
   it('modelName option', () => {
     const relationDefn = relations(Paragraph, {modelName: 'other'})
-    assert.deepEqual(relationDefn.book.modelFromName, 'other')
+    assert.deepEqual(relationDefn.book.modelFrom, 'other')
   })
 
   it('support registry syntax', () => {
     const relationDefn = relations(User)
-    assert.equal(relationDefn.comments.modelToName, 'Comment')
+    assert.equal(relationDefn.comments.modelTo, 'Comment')
   })
 
   it('support override of relationship defn via comment in method defn', () => {
@@ -133,11 +198,11 @@ describe('bookshelf-model-relations', () => {
         /** relationship
           type:belongsTo
           keyFrom:bookity_id
-          modelFromName:thing
+          modelFrom:thing
           keyTo:null
-          modelToName:Bookity
-          through:false
-          throughModelName:Other */
+          modelTo:Bookity
+          keyThrough:null
+          modelThrough:Other */
       }
     })
     const relationDefn = relations(Model)
@@ -146,11 +211,12 @@ describe('bookshelf-model-relations', () => {
         name: 'bookity',
         type: 'belongsTo',
         keyFrom: 'bookity_id',
-        modelFromName: 'thing',
+        modelFrom: 'thing',
         keyTo: null,
-        modelToName: 'Bookity',
-        through: true,
-        throughModelName: 'Other'
+        modelTo: 'Bookity',
+        multiple: false,
+        keyThrough: null,
+        modelThrough: 'Other'
       }
     })
   })
@@ -161,11 +227,12 @@ describe('bookshelf-model-relations', () => {
         silly: {
           type: 'belongsTo',
           keyFrom: 'bookid',
-          modelFromName: 'Model',
+          modelFrom: 'Model',
           keyTo: 'nothing',
-          modelToName: 'BookModel',
-          through: true,
-          throughModelName: 'Wuther'
+          modelTo: 'BookModel',
+          keyThrough: null,
+          modelThrough: 'Wuther',
+          multiple: false
         }
       },
 
@@ -179,11 +246,12 @@ describe('bookshelf-model-relations', () => {
         name: 'silly',
         type: 'belongsTo',
         keyFrom: 'bookid',
-        modelFromName: 'Model',
+        modelFrom: 'Model',
         keyTo: 'nothing',
-        modelToName: 'BookModel',
-        through: true,
-        throughModelName: 'Wuther'
+        modelTo: 'BookModel',
+        keyThrough: null,
+        modelThrough: 'Wuther',
+        multiple: false
       }
     })
   })

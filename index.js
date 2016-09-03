@@ -32,6 +32,8 @@ const capture = (str, matcher) => {
   if (matcher.test(str)) {
     const value = str.match(matcher)[1]
     if (value === 'null') return null
+    if (value === 'false') return false
+    if (value === 'true') return true
     return value
   }
   return null
@@ -52,18 +54,34 @@ module.exports = (Model, options) => {
     const functionString = proto[prop].toString()
     const innerBlock = functionString.match(MATCHERS.INNER_FUNCTION_BLOCK)
 
+    // Handle defining relations via relationships comment
     const relationComment = capture(functionString, MATCHERS.RELATION_COMMENT)
     if (relationComment) {
       relationships[prop] = {
         name: prop,
         type: capture(relationComment, /type:([^\s]*)/),
-        through: Boolean(capture(relationComment, /through:([^\s]*)/)),
+        // through: Boolean(capture(relationComment, /through:([^\s]*)/)),
         keyFrom: capture(relationComment, /keyFrom:([^\s]*)/),
         keyTo: capture(relationComment, /keyTo:([^\s]*)/),
-        modelFromName: capture(relationComment, /modelFromName:([^\s]*)/) || options.modelName,
-        modelToName: capture(relationComment, /modelToName:([^\s]*)/),
-        throughModelName: capture(relationComment, /throughModelName:([^\s]*)/)
+        modelFrom: capture(relationComment, /modelFrom:([^\s]*)/) || options.modelName,
+        modelTo: capture(relationComment, /modelTo:([^\s]*)/),
+        modelThrough: capture(relationComment, /modelThrough:([^\s]*)/),
+        keyThrough: capture(relationComment, /keyThrough:([^\s]*)/),
+        multiple: capture(relationComment, /multiple:([^\s]*)/)
       }
+      if (!relationships[prop].multiple) {
+        switch (relationships[prop].type) {
+          case RELATIONSHIP_TYPES.BELONGS_TO:
+            relationships[prop].multiple = false
+            break
+          case RELATIONSHIP_TYPES.HAS_ONE:
+            relationships[prop].multiple = false
+            break
+          default:
+            relationships[prop].multiple = true
+        }
+      }
+
       continue
     }
 
@@ -71,12 +89,25 @@ module.exports = (Model, options) => {
       relationships[prop] = {
         name: prop,
         type: proto.relations[prop].type || null,
-        through: proto.relations[prop].through || null,
         keyFrom: proto.relations[prop].keyFrom || null,
         keyTo: proto.relations[prop].keyTo || null,
-        modelFromName: proto.relations[prop].modelFromName || null,
-        modelToName: proto.relations[prop].modelToName || null,
-        throughModelName: proto.relations[prop].throughModelName || null
+        modelFrom: proto.relations[prop].modelFrom || null,
+        modelTo: proto.relations[prop].modelTo || null,
+        modelThrough: proto.relations[prop].modelThrough || null,
+        keyThrough: proto.relations[prop].keyThrough,
+        multiple: capture(relationComment, /multiple:([^\s]*)/)
+      }
+      if (!relationships[prop].multiple) {
+        switch (relationships[prop].type) {
+          case RELATIONSHIP_TYPES.BELONGS_TO:
+            relationships[prop].multiple = false
+            break
+          case RELATIONSHIP_TYPES.HAS_ONE:
+            relationships[prop].multiple = false
+            break
+          default:
+            relationships[prop].multiple = true
+        }
       }
       continue
     }
@@ -86,22 +117,32 @@ module.exports = (Model, options) => {
     relationships[prop] = {
       name: prop,
       type: capture(functionString, MATCHERS.RELATIONSHIP_TYPE),
-      through: MATCHERS.THROUGH.test(functionString),
+      // through: MATCHERS.THROUGH.test(functionString),
       keyFrom: null,
       keyTo: null,
-      modelFromName: options.modelName,
-      modelToName: capture(functionString, MATCHERS.MODEL_TO_NAME),
-      throughModelName: capture(functionString, MATCHERS.THROUGH_MODEL_NAME)
+      modelFrom: options.modelName,
+      modelTo: capture(functionString, MATCHERS.MODEL_TO_NAME),
+      modelThrough: capture(functionString, MATCHERS.THROUGH_MODEL_NAME),
+      keyThrough: null,
+      multiple: false
     }
 
     const fk = capture(functionString, MATCHERS.RELATION_FUNCTION_PARAMS)
 
     if (RELATIONSHIP_TYPES.BELONGS_TO === relationships[prop].type) {
-      relationships[prop].keyFrom = fk || _.snakeCase(`${relationships[prop].modelToName}_id`)
+      relationships[prop].keyFrom = fk || _.snakeCase(`${relationships[prop].modelTo}_id`)
       relationships[prop].keyTo = proto.idAttribute || 'id'
+      relationships[prop].multiple = false
+    } else if (RELATIONSHIP_TYPES.HAS_ONE === relationships[prop].type) {
+      relationships[prop].multiple = false
     } else {
-      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFromName}_id`)
+      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
       relationships[prop].keyFrom = proto.idAttribute || 'id'
+      relationships[prop].multiple = true
+    }
+
+    if (relationships[prop].modelThrough) {
+      relationships[prop].keyThrough = _.snakeCase(`${relationships[prop].modelTo}_id`)
     }
   }
   return relationships
