@@ -52,7 +52,6 @@ Chapter.hasMany(Paragraph)
 
 Paragraph.belongsTo(Book)
 
-
 describe('loopback relation definitions', () => {
   it('relation defn for Post model', () => {
     const relations = JSON.parse(JSON.stringify(Post.relations))
@@ -135,75 +134,4 @@ describe('loopback relation definitions', () => {
           keyThrough: 'physicianId' }
     })
   })
-
-  // it('modelName option', () => {
-  //   const relationDefn = relations(Paragraph, {modelName: 'other'})
-  //   assert.deepEqual(relationDefn.book.modelFromName, 'other')
-  // })
-
-  // it('support registry syntax', () => {
-  //   const relationDefn = relations(User)
-  //   assert.equal(relationDefn.comments.modelToName, 'Comment')
-  // })
-
-  // it('support override of relationship defn via comment in method defn', () => {
-  //   const Model = bookshelf.Model.extend({
-  //     bookity: function () {
-  //       /** relationship
-  //         type:belongsTo
-  //         keyFrom:bookity_id
-  //         modelFromName:thing
-  //         keyTo:null
-  //         modelToName:Bookity
-  //         through:false
-  //         throughModelName:Other */
-  //     }
-  //   })
-  //   const relationDefn = relations(Model)
-  //   assert.deepEqual(relationDefn, {
-  //     bookity: {
-  //       name: 'bookity',
-  //       type: 'belongsTo',
-  //       keyFrom: 'bookity_id',
-  //       modelFromName: 'thing',
-  //       keyTo: null,
-  //       modelToName: 'Bookity',
-  //       through: true,
-  //       throughModelName: 'Other'
-  //     }
-  //   })
-  // })
-
-  // it('support override of relationship defn via relationships object on model', () => {
-  //   const Model = bookshelf.Model.extend({
-  //     relations: {
-  //       silly: {
-  //         type: 'belongsTo',
-  //         keyFrom: 'bookid',
-  //         modelFromName: 'Model',
-  //         keyTo: 'nothing',
-  //         modelToName: 'BookModel',
-  //         through: true,
-  //         throughModelName: 'Wuther'
-  //       }
-  //     },
-
-  //     silly: function () {
-  //       return this.hasMany('Comment')
-  //     }
-  //   })
-  //   const relationDefn = relations(Model)
-  //   assert.deepEqual(relationDefn, {
-  //     silly: {
-  //       name: 'silly',
-  //       type: 'belongsTo',
-  //       keyFrom: 'bookid',
-  //       modelFromName: 'Model',
-  //       keyTo: 'nothing',
-  //       modelToName: 'BookModel',
-  //       through: true,
-  //       throughModelName: 'Wuther'
-  //     }
-  //   })
-  // })
 })
