@@ -15,3 +15,40 @@ npm install bookshelf-model-relations --save
 ```
 
 ## Usage
+
+Require the module
+```js
+const relations = require('bookshelf-model-relations)
+```
+
+Pass it a bookshelf model
+```js
+const relationships = relations(Post)
+
+/*
+{
+  user: {
+    name: 'user',
+    type: 'belongsTo',
+    keyFrom: 'user_id',
+    modelFrom: 'Post',
+    keyTo: 'id',
+    modelTo: 'User',
+    keyThrough: null,
+    modelThrough: null,
+    multiple: false
+  },
+  comments: {
+    name: 'comments',
+    type: 'hasMany',
+    keyFrom: 'id',
+    modelFrom: 'Post',
+    keyTo: 'post_id',
+    modelTo: 'Comment',
+    keyThrough: null,
+    modelThrough: null,
+    multiple: true
+  }
+}
+*/
+```
