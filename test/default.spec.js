@@ -11,7 +11,7 @@ describe('bookshelf-model-relations', () => {
     const Post = bookshelf.Model.extend({
       tableName: 'posts',
       idAttribute: '_id',
-      user () { return this.belongsTo(User, ['userid']) },
+      user () { return this.belongsTo(User, 'userid') },
       comments () { return this.hasMany(Comment) },
       other () { console.log('is not a relationship function') }
     })

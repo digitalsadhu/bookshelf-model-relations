@@ -19,7 +19,7 @@ const MATCHERS = Object.freeze({
   THROUGH: /\.*through\s*\(/,
   MODEL_TO_NAME: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(['"]?([^'",\\)]*)`),
   THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(['"]?([^,'"\\)]*)`),
-  RELATION_FUNCTION_PARAMS: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(.*,*\\s*\\[['"]([^\\'"]*)`),
+  RELATION_FUNCTION_PARAMS: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(.*,\\s*['"]([^\\'"]*)`),
   RELATION_COMMENT: /\/\*+\s*relationship\s*([^\*]*)/
 })
 
