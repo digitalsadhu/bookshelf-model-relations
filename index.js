@@ -129,7 +129,20 @@ module.exports = (Model, options) => {
       relationships[prop].keyTo = proto.idAttribute || 'id'
       relationships[prop].multiple = false
     } else if (RELATIONSHIP_TYPES.HAS_ONE === relationships[prop].type) {
+      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
+      relationships[prop].keyFrom = proto.idAttribute || 'id'
       relationships[prop].multiple = false
+    } else if (RELATIONSHIP_TYPES.BELONGS_TO_MANY === relationships[prop].type) {
+      relationships[prop].type = 'hasMany'
+      if (!relationships[prop].modelThrough) {
+        relationships[prop].modelThrough = relationships[prop].modelFrom + relationships[prop].modelTo
+      }
+      if (!relationships[prop].keyThrough) {
+        relationships[prop].keyThrough = _.snakeCase(`${relationships[prop].modelTo}_id`)
+      }
+      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
+      relationships[prop].keyFrom = proto.idAttribute || 'id'
+      relationships[prop].multiple = true
     } else {
       relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
       relationships[prop].keyFrom = proto.idAttribute || 'id'

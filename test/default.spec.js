@@ -103,33 +103,87 @@ describe('bookshelf-model-relations', () => {
     })
   })
 
-  it('through', () => {
+  it('hasMany', () => {
+    const Order = bookshelf.Model.extend({tableName: 'orders'})
+    const Customer = bookshelf.Model.extend({
+      tableName: 'customers',
+
+      orders: function () {
+        return this.hasMany(Order)
+      }
+    })
+
+    assert.deepEqual(relations(Customer), {
+      orders:
+        { name: 'orders',
+          type: 'hasMany',
+          modelFrom: 'Customer',
+          keyFrom: 'id',
+          modelTo: 'Order',
+          keyTo: 'customer_id',
+          modelThrough: null,
+          keyThrough: null,
+          multiple: true }
+    })
+  })
+
+  it('hasOne', () => {
+    const Account = bookshelf.Model.extend({tableName: 'accounts'})
+    const Supplier = bookshelf.Model.extend({
+      tableName: 'suppliers',
+      account: function () { return this.hasOne(Account) }
+    })
+
+    assert.deepEqual(relations(Supplier), {
+      account:
+        { name: 'account',
+          type: 'hasOne',
+          modelFrom: 'Supplier',
+          keyFrom: 'id',
+          modelTo: 'Account',
+          keyTo: 'supplier_id',
+          modelThrough: null,
+          keyThrough: null,
+          multiple: false }
+    })
+  })
+
+  it('belongsTo', () => {
+    const Customer = bookshelf.Model.extend({tableName: 'customers'})
+    const Order = bookshelf.Model.extend({
+      tableName: 'orders',
+      customer: function () { return this.belongsTo(Customer) }
+    })
+
+    assert.deepEqual(relations(Order), {
+      customer:
+        { name: 'customer',
+          type: 'belongsTo',
+          modelFrom: 'Order',
+          keyFrom: 'customer_id',
+          modelTo: 'Customer',
+          keyTo: 'id',
+          modelThrough: null,
+          keyThrough: null,
+          multiple: false }
+    })
+  })
+
+  it('hasMany through', () => {
     const Appointment = bookshelf.Model.extend({
       tableName: 'appointment',
-
-      patient: function () {
-        return this.belongsTo(Patient)
-      },
-
-      physician: function () {
-        return this.belongsTo(Physician)
-      }
+      patient: function () { return this.belongsTo(Patient) },
+      physician: function () { return this.belongsTo(Physician) }
     })
 
     const Physician = bookshelf.Model.extend({
       tableName: 'physician',
-
-      patients: function () {
-        return this.hasMany(Patient).through(Appointment)
-      }
+      patients: function () { return this.hasMany(Patient).through(Appointment) }
     })
 
     const Patient = bookshelf.Model.extend({
       tableName: 'patient',
-
-      physicians: function () {
-        return this.hasMany(Physician).through(Appointment)
-      }
+      physicians: function () { return this.hasMany(Physician).through(Appointment) }
     })
 
     assert.deepEqual(relations(Appointment), {
@@ -179,6 +233,83 @@ describe('bookshelf-model-relations', () => {
           multiple: true,
           modelThrough: 'Appointment',
           keyThrough: 'physician_id' }
+    })
+  })
+
+  it('belongsToMany', () => {
+    const Part = bookshelf.Model.extend({
+      tableName: 'part',
+      assemblies: function () { return this.belongsToMany(Assembly) }
+    })
+    const Assembly = bookshelf.Model.extend({
+      tableName: 'assembly',
+      parts: function () { return this.belongsToMany(Part) }
+    })
+
+    assert.deepEqual(relations(Part), {
+      assemblies:
+        { name: 'assemblies',
+          type: 'hasMany',
+          modelFrom: 'Part',
+          keyFrom: 'id',
+          modelTo: 'Assembly',
+          keyTo: 'part_id',
+          modelThrough: 'PartAssembly',
+          keyThrough: 'assembly_id',
+          multiple: true }
+    })
+
+    assert.deepEqual(relations(Assembly), {
+      parts:
+        { name: 'parts',
+          type: 'hasMany',
+          modelFrom: 'Assembly',
+          keyFrom: 'id',
+          modelTo: 'Part',
+          keyTo: 'assembly_id',
+          modelThrough: 'AssemblyPart',
+          keyThrough: 'part_id',
+          multiple: true }
+    })
+  })
+
+  it('belongsToMany through', () => {
+    const Part = bookshelf.Model.extend({
+      tableName: 'part',
+      assemblies: function () { return this.belongsToMany(Assembly).through(PartAssembly) }
+    })
+    const PartAssembly = bookshelf.Model.extend({
+      tableName: 'part_assembly'
+    })
+    const Assembly = bookshelf.Model.extend({
+      tableName: 'assembly',
+      parts: function () { return this.belongsToMany(Part).through(PartAssembly) }
+    })
+
+    assert.deepEqual(relations(Part), {
+      assemblies:
+        { name: 'assemblies',
+          type: 'hasMany',
+          modelFrom: 'Part',
+          keyFrom: 'id',
+          modelTo: 'Assembly',
+          keyTo: 'part_id',
+          modelThrough: 'PartAssembly',
+          keyThrough: 'assembly_id',
+          multiple: true }
+    })
+
+    assert.deepEqual(relations(Assembly), {
+      parts:
+        { name: 'parts',
+          type: 'hasMany',
+          modelFrom: 'Assembly',
+          keyFrom: 'id',
+          modelTo: 'Part',
+          keyTo: 'assembly_id',
+          modelThrough: 'PartAssembly',
+          keyThrough: 'part_id',
+          multiple: true }
     })
   })
 

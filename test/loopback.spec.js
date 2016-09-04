@@ -59,7 +59,7 @@ describe('loopback relation definitions', () => {
     assert.equal(relations.comments.multiple, true)
   })
 
-  it('through', () => {
+  it('hasMany through', () => {
     const Appointment = ds.createModel('Appointment')
     app.model(Appointment)
 
@@ -122,6 +122,107 @@ describe('loopback relation definitions', () => {
           multiple: true,
           modelThrough: 'Appointment',
           keyThrough: 'physicianId' }
+    })
+  })
+
+  it('hasOne', () => {
+    const Supplier = ds.createModel('Supplier')
+    app.model(Supplier)
+    const Account = ds.createModel('Account')
+    app.model(Account)
+    Supplier.hasOne(Account)
+
+    const supplierRelations = JSON.parse(JSON.stringify(Supplier.relations))
+
+    assert.deepEqual(supplierRelations, {
+      account:
+        { name: 'account',
+          type: 'hasOne',
+          modelFrom: 'Supplier',
+          keyFrom: 'id',
+          modelTo: 'Account',
+          keyTo: 'supplierId',
+          multiple: false }
+    })
+  })
+
+  it('belongsTo', () => {
+    const Order = ds.createModel('Order')
+    app.model(Order)
+    const Customer = ds.createModel('Customer')
+    app.model(Customer)
+    Order.belongsTo(Customer)
+
+    const orderRelations = JSON.parse(JSON.stringify(Order.relations))
+
+    assert.deepEqual(orderRelations, {
+      customer:
+        { name: 'customer',
+          type: 'belongsTo',
+          modelFrom: 'Order',
+          keyFrom: 'customerId',
+          modelTo: 'Customer',
+          keyTo: 'id',
+          multiple: false }
+    })
+  })
+
+  it('hasMany', () => {
+    const Order = ds.createModel('Order')
+    app.model(Order)
+    const Customer = ds.createModel('Customer')
+    app.model(Customer)
+    Customer.hasMany(Order)
+
+    const customerRelations = JSON.parse(JSON.stringify(Customer.relations))
+
+    assert.deepEqual(customerRelations, {
+      orders:
+        { name: 'orders',
+          type: 'hasMany',
+          modelFrom: 'Customer',
+          keyFrom: 'id',
+          modelTo: 'Order',
+          keyTo: 'customerId',
+          multiple: true }
+    })
+  })
+
+  it('hasAndBelongsToMany', () => {
+    const Part = ds.createModel('Part')
+    app.model(Part)
+    const Assembly = ds.createModel('Assembly')
+    app.model(Assembly)
+    Part.hasAndBelongsToMany(Assembly)
+    Assembly.hasAndBelongsToMany(Part)
+
+    const partRelations = JSON.parse(JSON.stringify(Part.relations))
+    const assemblyRelations = JSON.parse(JSON.stringify(Assembly.relations))
+
+    assert.deepEqual(partRelations, {
+      assemblies:
+        { name: 'assemblies',
+          type: 'hasMany',
+          modelFrom: 'Part',
+          keyFrom: 'id',
+          modelTo: 'Assembly',
+          keyTo: 'partId',
+          modelThrough: 'PartAssembly',
+          keyThrough: 'assemblyId',
+          multiple: true }
+    })
+
+    assert.deepEqual(assemblyRelations, {
+      parts:
+        { name: 'parts',
+          type: 'hasMany',
+          modelFrom: 'Assembly',
+          keyFrom: 'id',
+          modelTo: 'Part',
+          keyTo: 'assemblyId',
+          modelThrough: 'PartAssembly',
+          keyThrough: 'partId',
+          multiple: true }
     })
   })
 })
