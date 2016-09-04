@@ -1,6 +1,6 @@
 # bookshelf-model-relations
 
-Provides a way to see what relations/associations a bookshelf model has
+Provides a way to see what relations/associations a bookshelf model has.
 
 [![NPM](https://nodei.co/npm/bookshelf-model-relations.png?downloads=true&stars=true)](https://nodei.co/npm/bookshelf-model-relations/)
 
@@ -12,6 +12,38 @@ Provides a way to see what relations/associations a bookshelf model has
 
 ```
 npm install bookshelf-model-relations --save
+```
+
+## Relation definition
+
+The relation definition object that is returned by this module when you pass it
+a bookshelf model takes the following form:
+
+```js
+{
+  user: {
+    name: 'user', // the name of the relation
+    type: 'belongsTo', // belongsTo, hasMany, etc
+    modelFrom: 'Post', // always the name of the model passed into bookshelf-model-relations
+    keyFrom: 'user_id', // the key on the model desribed in modelFrom
+    modelTo: 'User', // the model that is related to via type
+    keyTo: 'id', // the key on the model described in modelTo
+    modelThrough: null, // if a through model is used (eg. many to many) that model is listed here
+    keyThrough: null, // the key on the through model (if present) that points to modelTo
+    multiple: false // whether the relation returns a single model or multiple
+  },
+  comments: {
+    name: 'comments',
+    type: 'hasMany',
+    modelFrom: 'Post',
+    keyFrom: 'id',
+    modelTo: 'Comment',
+    keyTo: 'post_id',
+    modelThrough: null,
+    keyThrough: null,
+    multiple: true
+  }
+}
 ```
 
 ## Usage
