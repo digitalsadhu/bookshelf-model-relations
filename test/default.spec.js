@@ -182,6 +182,15 @@ describe('bookshelf-model-relations', () => {
     })
   })
 
+  it('modelName is calculated correctly', () => {
+    const Model = bookshelf.Model.extend({
+      tableName: 'my_table_name',
+      test: function () { return this.hasMany('thing') }
+    })
+    const relationDefn = relations(Model)
+    assert.deepEqual(relationDefn.test.modelFrom, 'MyTableName')
+  })
+
   it('modelName option', () => {
     const relationDefn = relations(Paragraph, {modelName: 'other'})
     assert.deepEqual(relationDefn.book.modelFrom, 'other')

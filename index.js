@@ -44,7 +44,7 @@ module.exports = (Model, options) => {
   const proto = Reflect.getPrototypeOf(instance)
 
   options = _.defaults(options, {
-    modelName: _.upperFirst(inflection.singularize(_.toLower(instance.tableName)))
+    modelName: inflection.classify(_.toLower(instance.tableName))
   })
 
   const relationships = {}
