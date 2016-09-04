@@ -12,29 +12,19 @@ const Post = ds.createModel('Post', {
 })
 app.model(Post)
 
-const User = ds.createModel('User', {
-  id: {type: Number, id: true}
-})
+const User = ds.createModel('User', {})
 app.model(User)
 
-const Comment = ds.createModel('Comment', {
-  id: {type: Number, id: true}
-})
+const Comment = ds.createModel('Comment', {})
 app.model(Comment)
 
-const Book = ds.createModel('Book', {
-  id: {type: Number, id: true}
-})
+const Book = ds.createModel('Book', {})
 app.model(Book)
 
-const Paragraph = ds.createModel('Paragraph', {
-  id: {type: Number, id: true}
-})
+const Paragraph = ds.createModel('Paragraph', {})
 app.model(Paragraph)
 
-const Chapter = ds.createModel('Chapter', {
-  id: {type: Number, id: true}
-})
+const Chapter = ds.createModel('Chapter', {})
 app.model(Chapter)
 
 Post.belongsTo(User)

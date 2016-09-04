@@ -1,10 +1,5 @@
 'use strict'
 
-// TODO: handle polymorphic
-// TODO: check belongstoMany is correct (matches loopbacks approach)
-// TODO: handle this.belongsToMany(Post, ['comment_posts'], ['comment_id'], ['post_id']
-// TODO: add documentation
-
 const _ = require('lodash')
 const inflection = require('inflection')
 
