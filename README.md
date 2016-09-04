@@ -16,14 +16,14 @@ npm install bookshelf-model-relations --save
 
 ## Usage
 
-Require the module
+### Require the module
 ```js
 const relations = require('bookshelf-model-relations')
 ```
 
-Pass it a bookshelf model
+### Pass it a bookshelf model
 ```js
-const relationships = relations(Post)
+const relationships = relations(Post, options)
 
 /*
 {
@@ -51,4 +51,16 @@ const relationships = relations(Post)
   }
 }
 */
+```
+
+### options
+
+#### options.modelName
+
+bookshelf-model-relations attempts to work out the name of the model by taking the value of
+`tableName` singularizing it and then `UpperCamelCasing` it. If this is incorrect, you will
+need to manually set this via `options.modelName` like so:
+
+```js
+const relationships = relations(Post, {modelName: 'MyCustomClassName'})
 ```
