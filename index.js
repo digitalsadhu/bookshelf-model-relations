@@ -20,7 +20,8 @@ const MATCHERS = Object.freeze({
   MODEL_TO_NAME: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(['"]?([^'",\\)]*)`),
   THROUGH_MODEL_NAME: new RegExp(`\\s*through\\s*\\(['"]?([^,'"\\)]*)`),
   RELATION_FUNCTION_PARAMS: new RegExp(`(?:${_.values(RELATIONSHIP_TYPES).join('|')})\\s*\\(.*,\\s*['"]([^\\'"]*)`),
-  RELATION_COMMENT: /\/\*+\s*relationship\s*([^\*]*)/
+  RELATION_COMMENT: /\/\*+\s*relationship\s*([^\*]*)/,
+  BELONGS_TO_MANY_PARAMS: /belongsToMany\s*\(\s*['"]?([^'"]*)['"]?\s*,\s*['"]([^'"]*)['"]\s*,\s*['"]([^'"]*)['"]\s*,\s*['"]([^'"]*)/
 })
 
 const capture = (str, matcher) => {
@@ -55,7 +56,6 @@ module.exports = (Model, options) => {
       relationships[prop] = {
         name: prop,
         type: capture(relationComment, /type:([^\s]*)/),
-        // through: Boolean(capture(relationComment, /through:([^\s]*)/)),
         keyFrom: capture(relationComment, /keyFrom:([^\s]*)/),
         keyTo: capture(relationComment, /keyTo:([^\s]*)/),
         modelFrom: capture(relationComment, /modelFrom:([^\s]*)/) || options.modelName,
@@ -112,7 +112,6 @@ module.exports = (Model, options) => {
     relationships[prop] = {
       name: prop,
       type: capture(functionString, MATCHERS.RELATIONSHIP_TYPE),
-      // through: MATCHERS.THROUGH.test(functionString),
       keyFrom: null,
       keyTo: null,
       modelFrom: options.modelName,
@@ -134,22 +133,34 @@ module.exports = (Model, options) => {
       relationships[prop].multiple = false
     } else if (RELATIONSHIP_TYPES.BELONGS_TO_MANY === relationships[prop].type) {
       relationships[prop].type = 'hasMany'
+      relationships[prop].multiple = true
+
+      if (MATCHERS.BELONGS_TO_MANY_PARAMS.test(functionString)) {
+        const params = functionString.match(MATCHERS.BELONGS_TO_MANY_PARAMS)
+        relationships[prop].modelTo = params[1] || null
+        relationships[prop].modelThrough = inflection.classify(params[2])
+        relationships[prop].keyTo = params[3] || null
+        relationships[prop].keyThrough = params[4] || null
+      }
       if (!relationships[prop].modelThrough) {
-        relationships[prop].modelThrough = relationships[prop].modelFrom + relationships[prop].modelTo
+        relationships[prop].modelThrough = inflection.classify([relationships[prop].modelFrom, relationships[prop].modelTo].sort().join('_'))
       }
       if (!relationships[prop].keyThrough) {
         relationships[prop].keyThrough = _.snakeCase(`${relationships[prop].modelTo}_id`)
       }
-      relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
-      relationships[prop].keyFrom = proto.idAttribute || 'id'
-      relationships[prop].multiple = true
+      if (!relationships[prop].keyTo) {
+        relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
+      }
+      if (!relationships[prop].keyFrom) {
+        relationships[prop].keyFrom = proto.idAttribute || 'id'
+      }
     } else {
       relationships[prop].keyTo = fk || _.snakeCase(`${relationships[prop].modelFrom}_id`)
       relationships[prop].keyFrom = proto.idAttribute || 'id'
       relationships[prop].multiple = true
     }
 
-    if (relationships[prop].modelThrough) {
+    if (relationships[prop].modelThrough && !relationships[prop].keyThrough) {
       relationships[prop].keyThrough = _.snakeCase(`${relationships[prop].modelTo}_id`)
     }
   }

@@ -204,7 +204,7 @@ describe('bookshelf-model-relations', () => {
           keyFrom: 'id',
           modelTo: 'Assembly',
           keyTo: 'part_id',
-          modelThrough: 'PartAssembly',
+          modelThrough: 'AssemblyPart',
           keyThrough: 'assembly_id',
           multiple: true }
     })
@@ -219,6 +219,27 @@ describe('bookshelf-model-relations', () => {
           keyTo: 'assembly_id',
           modelThrough: 'AssemblyPart',
           keyThrough: 'part_id',
+          multiple: true }
+    })
+  })
+
+  it('belongsToMany custom values', () => {
+    const Part = bookshelf.Model.extend({
+      tableName: 'part',
+      assemblies: function () { return this.belongsToMany(Assembly, 'partassembly', 'partid', 'assemblyid') }
+    })
+    const Assembly = bookshelf.Model.extend({ tableName: 'assembly' })
+
+    assert.deepEqual(relations(Part), {
+      assemblies:
+        { name: 'assemblies',
+          type: 'hasMany',
+          modelFrom: 'Part',
+          keyFrom: 'id',
+          modelTo: 'Assembly',
+          keyTo: 'partid',
+          modelThrough: 'Partassembly',
+          keyThrough: 'assemblyid',
           multiple: true }
     })
   })
